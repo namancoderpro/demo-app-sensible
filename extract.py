@@ -1,7 +1,13 @@
 import requests
+from decouple import config
+
+API_KEY = config('API_KEY')
+
+
 
 def createDocType(): 
     url = "https://api.sensible.so/v0/document_types"
+
 
     payload = {
         "schema": {
@@ -11,11 +17,11 @@ def createDocType():
             "ocr_level": 2
         },
         "name": "pdf_tables"
-    },
+    }
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
-        "authorization": "Bearer YOUR_API_KEY"
+        "authorization": f"Bearer {API_KEY}"
     }
 
     response = requests.post(url, json=payload, headers=headers)
@@ -34,16 +40,16 @@ def createConfig():
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
-        "authorization": "Bearer YOUR_API_KEY"
+        "authorization": f"Bearer {API_KEY}"
     }
 
     response = requests.post(url, json=payload, headers=headers)
 
     print(response.text)
 
-def uploadRefDoc():
-
+def getUploadUrl():
     url = "https://api.sensible.so/v0/document_types/ID_RETURNED_WHILE_MAKING_DOCU_TYPE/goldens"
+
 
     payload = {
         "name": "pdf_with_table",
@@ -52,12 +58,52 @@ def uploadRefDoc():
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
-        "authorization": "Bearer YOUR_API_KEY"
+        "authorization": f"Bearer {API_KEY}"
     }
 
     response = requests.post(url, json=payload, headers=headers)
 
     print(response.text)
+
+
+def uploadRefDoc():
+
+    d_name = "relative document path here"
+
+    url = "UPLOAD_URL_HERE"
+
+    headers = {}
+
+    with open(d_name, 'rb') as fp:
+        pdf_file = fp.read()
+        response = requests.put(url, headers=headers, data=pdf_file)
+
+    print(response)
+
+def extractTable():
+    d_name = "relative/document/path/here"
+    d_type = "pdf_tables"
+    env = "production"
+    API_KEY = config('API_KEY')
+
+    url = f"https://api.sensible.so/v0/extract/{d_type}?environment={env}"
+
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-type": "application/pdf"
+    }
+
+    with open(d_name, 'rb') as fp:
+        pdf_file = fp.read()
+        response = requests.post(url, headers=headers, data=pdf_file)
+
+    print(f"Extraction Status code: {response.status_code}")
+
+    if response.status_code == 200:
+        print(response.json())
+    else:
+        print(response.json())
+
 
 
 def createExcel():
@@ -66,10 +112,12 @@ def createExcel():
 
     headers = {
         "accept": "application/json",
-        "authorization": "Bearer YOUR_API_KEY"
+        "authorization": f"Bearer {API_KEY}"
     }
 
     response = requests.get(url, headers=headers)
 
     print(response.text)
+
+
 
