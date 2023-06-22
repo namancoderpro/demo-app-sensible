@@ -2,7 +2,7 @@ import requests
 import json
 import sys
 
-SENSIBLE_API_KEY = "<Your Sensible API Key>"
+SENSIBLE_API_KEY = "<Your API Key Here>"
 
 
 def create_document_type(document_type_name):
@@ -49,6 +49,7 @@ def create_configuration_for_doc_type(document_type_id):
                     "method": {
                         "id": "fixedTable",
                         "columnCount": 5,
+                        "startOnRow": 1,
                         "columns": [
                             {
                                 "id": "Speed (mph)",
