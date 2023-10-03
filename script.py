@@ -1,8 +1,11 @@
 import requests
 import json
-import sys
+import sys, os
+from dotenv import load_dotenv
 
-SENSIBLE_API_KEY = "<Your API Key Here>"
+load_dotenv()
+
+SENSIBLE_API_KEY = os.environ["API_KEY"]
 
 
 def create_document_type(document_type_name):
@@ -20,7 +23,7 @@ def create_document_type(document_type_name):
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
-        "authorization": f"Bearer {SENSIBLE_API_KEY}"
+        "authorization": "Bearer {}".format(SENSIBLE_API_KEY)
     }
 
     response = requests.post(url, json=payload, headers=headers)
@@ -30,13 +33,12 @@ def create_document_type(document_type_name):
         response_data = response.json()
         return response_data["id"]
     else:
-        print(
-            f"Document type with the name {document_type_name} already exists. Please choose a different name")
+        print("Document type with the name {} already exists. Please choose a different name".format(document_type_name))
         return None
 
 
 def create_configuration_for_doc_type(document_type_id):
-    url = f"https://api.sensible.so/v0/document_types/{document_type_id}/configurations"
+    url = "https://api.sensible.so/v0/document_types/{}/configurations".format(document_type_id)
 
     payload = {
         "name": "extract_table",
@@ -81,7 +83,7 @@ def create_configuration_for_doc_type(document_type_id):
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
-        "authorization": f"Bearer {SENSIBLE_API_KEY}"
+        "authorization": "Bearer {}".format(SENSIBLE_API_KEY)
     }
 
     response = requests.post(url, json=payload, headers=headers)
@@ -95,7 +97,7 @@ def create_configuration_for_doc_type(document_type_id):
 def upload_reference_document(document_type_id):
 
     # Generate upload URL for reference document first
-    url = f"https://api.sensible.so/v0/document_types/{document_type_id}/goldens"
+    url = "https://api.sensible.so/v0/document_types/{}/goldens".format(document_type_id)
 
     payload = {
         "name": "pdf_with_table",
@@ -104,7 +106,7 @@ def upload_reference_document(document_type_id):
     headers = {
         "accept": "application/json",
         "content-type": "application/json",
-        "authorization": f"Bearer {SENSIBLE_API_KEY}"
+        "authorization": "Bearer {}".format(SENSIBLE_API_KEY)
     }
 
     response = requests.post(url, json=payload, headers=headers)
@@ -133,10 +135,10 @@ def upload_reference_document(document_type_id):
 def extract_table_from_pdf(test_document_path):
     document_type_name = "automobile_land_speed_records"
 
-    url = f"https://api.sensible.so/v0/extract/{document_type_name}?environment=development"
+    url = "https://api.sensible.so/v0/extract/{}?environment=development".format(document_type_name)
 
     headers = {
-        "Authorization": f"Bearer {SENSIBLE_API_KEY}",
+        "Authorization": "Bearer {}".format(SENSIBLE_API_KEY),
         "Content-type": "application/pdf"
     }
 
@@ -156,11 +158,11 @@ def extract_table_from_pdf(test_document_path):
 
 
 def convert_extraction_to_excel(extraction_id):
-    url = f"https://api.sensible.so/v0/generate_excel/{extraction_id}"
+    url = "https://api.sensible.so/v0/generate_excel/{}".format(extraction_id)
 
     headers = {
         "accept": "application/json",
-        "authorization": f"Bearer {SENSIBLE_API_KEY}"
+        "authorization": "Bearer {}".format(SENSIBLE_API_KEY)
     }
 
     response = requests.get(url, headers=headers)
@@ -180,9 +182,9 @@ def download_excel_file(file_url):
 
     if response.status_code == 200:
         open("result.xlsx", 'wb').write(response.content)
-        print("The excel file has been downloaded at ./result.xlsx")
+        print("The Excel file has been downloaded at ./result.xlsx")
     else:
-        print("The excel file could not be downloaded")
+        print("The Excel file could not be downloaded")
 
 
 def setup_sensible():
@@ -232,7 +234,7 @@ def main():
 
         test_document_path = arguments[2]
         print(
-            f"Extracting table from {test_document_path} and converting to excel...")
+            "Extracting table from {} and converting to Excel...".format(test_document_path))
 
         extract_table_from_pdf_in_excel(test_document_path)
 
