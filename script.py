@@ -70,6 +70,7 @@ def create_configuration_for_doc_type(document_type_id):
                                 "index": 4
                             }
                         ],
+                        "startOnRow": 1,
                         "stop": {
                             "type": "startsWith",
                             "text": "Example 5"
